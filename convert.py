@@ -4,7 +4,7 @@ from torchvision import models
 
 model = torch.hub.load('yolov5',
         'custom',
-        path='yolov5l6_v2.2_2048x2048_30.05.2022_conf0.546.pt',
+        path='yolov5/weights/yolov5l6_v2.2_2048x2048_30.05.2022_conf0.546.pt',
         source='local',
         force_reload=True)  # local repo
 
@@ -19,4 +19,4 @@ model_neuron = torch.neuron.trace(model,
                                 example_inputs=[fake_image])
 
 ## Export to saved model
-model_neuron.save("yolov5/yolov5l6_v2.2_2048x2048_30.05.2022_conf0.546_aws_neuron.pt")
+model_neuron.save("yolov5/weights/yolov5l6_v2.2_2048x2048_30.05.2022_conf0.546_aws_neuron.pt")
