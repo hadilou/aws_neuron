@@ -9,10 +9,9 @@ import PIL
 import os
 import time
 import numpy as np
-
+import argparse
 n_cores = 4
 n_threads = 32
-
 
 def postprocess(boxes, scores, score_threshold=0.05, iou_threshold=0.5):
     """
@@ -211,7 +210,7 @@ def benchmark():
     """
     Run a benchmark on the entire dataset against the neuron model.
     """
-    
+    start_time = time.time()
     # Load a model into each NeuronCore
     models = [load_model() for _ in range(n_cores)]
     
@@ -232,14 +231,17 @@ def benchmark():
             results, times = result.result() # Note: Outputs unused for benchmark
             latency.append(times)
             sum_time += times
+    end_time = time.time()
     print(f"Total filenames :{len(filenames)}")
-    print('Duration: s', sum_time / n_threads)
+    print('Duration in Seconds', sum_time / n_threads)
     print('Images Per Second:', len(filenames) / (sum_time / n_threads))
+    print(f"Start time - end time in Seconds {start_time-end_time}")
     # print("Results",results)
     # print("Latency",latency)
     # print("Latency P50: {:.1f}".format(np.percentile(latency, 50)))
     # print("Latency P90: {:.1f}".format(np.percentile(latency, 90)))
     # print("Latency P95: {:.1f}".format(np.percentile(latency, 95)))
     # print("Latency P99: {:.1f}".format(np.percentile(latency, 99)))
+
 
 benchmark()
