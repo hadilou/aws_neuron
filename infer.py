@@ -13,6 +13,108 @@ import numpy as np
 n_cores = 4
 n_threads = 4
 
+
+def postprocess(boxes, scores, score_threshold=0.05, iou_threshold=0.5):
+    """
+    Classifies and filters bounding boxes from Yolo V4 output.
+    
+    Performs classification, filtering, and non-maximum suppression to remove
+    boxes that are irrelevant. The result is the filtered set of boxes, the 
+    associated label confidence score, and the predicted label.
+    
+    See: https://pytorch.org/docs/stable/torchvision/ops.html#torchvision.ops.nms
+    
+    Args:
+        boxes (torch.Tensor): The Yolo V5 bounding boxes.
+        scores (torch.Tensor): The categories scores for each box.
+        score_threshold (float): Ignore boxes with scores below threshold.
+        iou_threshold (float): Discards boxes with intersection above threshold. 
+            
+    Returns:
+        boxes (torch.Tensor): The filtered Yolo V5 bounding boxes.
+        scores (torch.Tensor): The label score for each box.
+        labels (torch.Tensor): The label for each box.
+    """
+    
+    # shape: [n_batch, n_boxes, 1, 4] => [n_boxes, 4]  # Assumes n_batch size is 1
+    boxes = boxes.squeeze()
+
+    # shape: [n_batch, n_boxes, 80] => [n_boxes, 80]  # Assumes n_batch size is 1
+    scores = scores.squeeze()
+
+    # Classify each box according to the maximum category score
+    score, column = torch.max(scores, dim=1)
+
+    # Filter out rows for scores which are below threshold
+    mask = score > score_threshold
+
+    # Filter model output data
+    boxes = boxes[mask]
+    score = score[mask]
+    idxs = column[mask]
+
+    # Perform non-max suppression on all categories at once. shape: [n_keep,]
+    keep = torchvision.ops.batched_nms(
+        boxes=boxes, 
+        scores=score, 
+        idxs=idxs,
+        iou_threshold=iou_threshold,
+    )
+
+    # The image category id associated with each column
+    categories = torch.tensor([
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16,
+        17, 18, 19, 20, 21, 22, 23, 24, 25, 27, 28, 31,
+        32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43,
+        44, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56,
+        57, 58, 59, 60, 61, 62, 63, 64, 65, 67, 70, 72,
+        73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 84, 85,
+        86, 87, 88, 89, 90
+    ])
+    
+    boxes = boxes[keep]       # shape: [n_keep, 4]
+    score = score[keep]       # shape: [n_keep,]
+    idxs = idxs[keep]
+    label = categories[idxs]  # shape: [n_keep,]
+    
+    return boxes, score, label
+
+
+def get_results_as_dict(boxes, scores, labels, image_orig):
+    """
+    Transforms post-processed output into dictionary output.
+    
+    This translates the model coordinate bounding boxes (x1, y1, x2, y2) 
+    into a rectangular description (x, y, width, height) scaled to the 
+    original image size.
+    
+    Args:
+        boxes (torch.Tensor): The Yolo V4 bounding boxes.
+        scores (torch.Tensor): The label score for each box.
+        labels (torch.Tensor): The label for each box.
+        image_orig (torch.Tensor): The image to scale the bounding boxes to.
+        
+    Returns:
+        output (dict): The dictionary of rectangle bounding boxes.
+    """
+    h_size, w_size = image_orig.shape[-2:]
+
+    x1 = boxes[:, 0] * w_size
+    y1 = boxes[:, 1] * h_size
+    x2 = boxes[:, 2] * w_size
+    y2 = boxes[:, 3] * h_size
+
+    width = x2 - x1
+    height = y2 - y1
+
+    boxes = torch.stack([x1, y1, width, height]).T
+    return {
+        'boxes': boxes.detach().numpy(),
+        'labels': labels.detach().numpy(),
+        'scores': scores.detach().numpy(),
+    }
+
+
 def get_image_filenames(root=os.getcwd(),work_dir=False):
     """
     Generate paths to the coco dataset image files.
@@ -23,7 +125,7 @@ def get_image_filenames(root=os.getcwd(),work_dir=False):
     Yields:
         filename (str): The path to an image file.
     """
-    if not workdir:
+    if not work_dir:
         image_path = "../panoramas/Tallinn"
         for root, dirs, files in os.walk(image_path):
             for filename in files:
