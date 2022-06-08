@@ -8,7 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 import PIL
 import os
 import time
-
+import numpy as np
 n_cores = 4
 n_threads = 16
 def get_image_filenames(root=os.getcwd()):
