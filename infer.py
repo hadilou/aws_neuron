@@ -11,6 +11,7 @@ import time
 import numpy as np
 n_cores = 4
 n_threads = 16
+
 def get_image_filenames(root=os.getcwd()):
     """
     Generate paths to the coco dataset image files.
@@ -41,6 +42,7 @@ def preprocess(path):
     resized = torchvision.transforms.functional.resize(image, [640, 640])
     tensor = torchvision.transforms.functional.to_tensor(resized)
     return tensor.unsqueeze(0).to(torch.float32)
+
 
 
 def load_model(filename='../yolov5/weights/yolov5l6_v2.2_2048x2048_30.05.2022_conf0.546_aws_neuron_640_compiled.pt'):
@@ -118,9 +120,9 @@ def benchmark():
     print('Images Per Second:', len(filenames) / (sum_time / n_threads))
     print("Results",results)
     print("Latency",latency)
-    print("Latency P50: {:.1f}".format(np.percentile(latency[1000:], 50)*1000.0))
-    print("Latency P90: {:.1f}".format(np.percentile(latency[1000:], 90)*1000.0))
-    print("Latency P95: {:.1f}".format(np.percentile(latency[1000:], 95)*1000.0))
-    print("Latency P99: {:.1f}".format(np.percentile(latency[1000:], 99)*1000.0))
+    print("Latency P50: {:.1f}".format(np.percentile(latency, 50)))
+    print("Latency P90: {:.1f}".format(np.percentile(latency, 90)))
+    print("Latency P95: {:.1f}".format(np.percentile(latency, 95)))
+    print("Latency P99: {:.1f}".format(np.percentile(latency, 99)))
 
 benchmark()
