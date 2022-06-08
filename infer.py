@@ -11,7 +11,7 @@ import time
 import numpy as np
 
 n_cores = 4
-n_threads = 16
+n_threads = 32
 
 
 def postprocess(boxes, scores, score_threshold=0.05, iou_threshold=0.5):
