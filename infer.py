@@ -43,7 +43,7 @@ def preprocess(path):
     return tensor.unsqueeze(0).to(torch.float32)
 
 
-def load_model(filename='yolov5l6_v2.2_2048x2048_30.05.2022_conf0.546_aws_neuron_640_compiled.pt'):
+def load_model(filename='../yolov5/weights/yolov5l6_v2.2_2048x2048_30.05.2022_conf0.546_aws_neuron_640_compiled.pt'):
     """
     Load and pre-warm the Yolo V5 model.
     
