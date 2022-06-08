@@ -9,7 +9,7 @@ import PIL
 import os
 import time
 
-n_threads = 4
+n_cores = 4
 
 def get_image_filenames(root=os.getcwd()):
     """
