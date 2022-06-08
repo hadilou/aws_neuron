@@ -38,7 +38,7 @@ def preprocess(path):
         result (torch.Tensor): The image for prediction. Shape: [1, 3, 2048, 2048]
     """
     image = PIL.Image.open(path).convert('RGB')
-    resized = torchvision.transforms.functional.resize(image, [2048, 2048])
+    resized = torchvision.transforms.functional.resize(image, [640, 640])
     tensor = torchvision.transforms.functional.to_tensor(resized)
     return tensor.unsqueeze(0).to(torch.float32)
 
