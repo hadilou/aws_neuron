@@ -215,7 +215,7 @@ def benchmark():
     t1_model = time.time()
     models = [load_model() for _ in range(n_cores)]
     t2_model = time.time()
-    print(f"Loading models to {n_cores} Neuron cores took {t1_model - t2_model} s")
+    print(f"Loading models to {n_cores} Neuron Cores took {t2_model - t1_model} s")
     # Create input/output lists
     filenames = list(get_image_filenames())
     results = list()
