@@ -110,7 +110,7 @@ def benchmark():
             out = pool.submit(task, models[i % len(models)], filename)
             results.append(out)
         for result in results:
-            results, times = result.result # Note: Outputs unused for benchmark
+            results, times = result.result() # Note: Outputs unused for benchmark
             latency.append(times)
             sum_time += times
     
