@@ -9,10 +9,11 @@ import PIL
 import os
 import time
 import numpy as np
+
 n_cores = 4
 n_threads = 16
 
-def get_image_filenames(root=os.getcwd()):
+def get_image_filenames(root=os.getcwd(),work_dir=False):
     """
     Generate paths to the coco dataset image files.
     
@@ -23,11 +24,15 @@ def get_image_filenames(root=os.getcwd()):
         filename (str): The path to an image file.
     """
     # image_path = os.path.join(root, 'val2017')
-    image_path = "../panoramas"
-    for root, dirs, files in os.walk(image_path):
-        for filename in files:
-            yield os.path.join(image_path, filename)
-
+    if not workdir:
+        image_path = "../panoramas"
+        for root, dirs, files in os.walk(image_path):
+            for filename in files:
+                yield os.path.join(image_path, filename)
+    
+    else:  
+            
+            
 def preprocess(path):
     """
     Load an image and convert to the expected Yolo V4 tensor format.
