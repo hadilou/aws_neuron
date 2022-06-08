@@ -116,6 +116,8 @@ def benchmark():
     
     print('Duration: ', sum_time / n_threads)
     print('Images Per Second:', len(filenames) / (sum_time / n_threads))
+    print("Results",results)
+    print("Latency",latency)
     print("Latency P50: {:.1f}".format(np.percentile(latency[1000:], 50)*1000.0))
     print("Latency P90: {:.1f}".format(np.percentile(latency[1000:], 90)*1000.0))
     print("Latency P95: {:.1f}".format(np.percentile(latency[1000:], 95)*1000.0))
