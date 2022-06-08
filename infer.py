@@ -115,7 +115,7 @@ def get_results_as_dict(boxes, scores, labels, image_orig):
     }
 
 
-def get_image_filenames(root=os.getcwd(),work_dir=False):
+def get_image_filenames(root=os.getcwd(),work_dir=True):
     """
     Generate paths to the coco dataset image files.
     
@@ -232,8 +232,8 @@ def benchmark():
             results, times = result.result() # Note: Outputs unused for benchmark
             latency.append(times)
             sum_time += times
-    
-    print('Duration: ', sum_time / n_threads)
+    print(f"Total filenames :{len(filenames)}")
+    print('Duration: s', sum_time / n_threads)
     print('Images Per Second:', len(filenames) / (sum_time / n_threads))
     # print("Results",results)
     # print("Latency",latency)
