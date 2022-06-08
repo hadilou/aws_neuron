@@ -11,7 +11,7 @@ import time
 import numpy as np
 
 n_cores = 4
-n_threads = 16
+n_threads = 4
 
 def get_image_filenames(root=os.getcwd(),work_dir=False):
     """
@@ -23,14 +23,24 @@ def get_image_filenames(root=os.getcwd(),work_dir=False):
     Yields:
         filename (str): The path to an image file.
     """
-    # image_path = os.path.join(root, 'val2017')
     if not workdir:
-        image_path = "../panoramas"
+        image_path = "../panoramas/Tallinn"
         for root, dirs, files in os.walk(image_path):
             for filename in files:
                 yield os.path.join(image_path, filename)
     
     else:  
+        load_path = "../panoramas/Test_UniSteel_Greece/"
+        streams = os.listdir(load_path)
+
+        for stream in (streams):
+            shoots = os.listdir(os.path.join(load_path,stream))
+            for shoot in shoots:
+                path_2048 = os.path.join(load_path,stream,shoot,'2048')
+                for filename in os.listdir(path_2048):
+                    if filename == '3.jpg' or filename == '4.jpg':
+                        continue 
+                    yield(os.path.join(load_path,stream,shoot,path_2048,filename))
             
             
 def preprocess(path):
@@ -123,11 +133,11 @@ def benchmark():
     
     print('Duration: ', sum_time / n_threads)
     print('Images Per Second:', len(filenames) / (sum_time / n_threads))
-    print("Results",results)
-    print("Latency",latency)
-    print("Latency P50: {:.1f}".format(np.percentile(latency, 50)))
-    print("Latency P90: {:.1f}".format(np.percentile(latency, 90)))
-    print("Latency P95: {:.1f}".format(np.percentile(latency, 95)))
-    print("Latency P99: {:.1f}".format(np.percentile(latency, 99)))
+    # print("Results",results)
+    # print("Latency",latency)
+    # print("Latency P50: {:.1f}".format(np.percentile(latency, 50)))
+    # print("Latency P90: {:.1f}".format(np.percentile(latency, 90)))
+    # print("Latency P95: {:.1f}".format(np.percentile(latency, 95)))
+    # print("Latency P99: {:.1f}".format(np.percentile(latency, 99)))
 
 benchmark()
