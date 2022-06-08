@@ -142,7 +142,7 @@ def get_image_filenames(root=os.getcwd(),work_dir=True):
                 for filename in os.listdir(path_2048):
                     if filename == '3.jpg' or filename == '4.jpg':
                         continue 
-                    yield(os.path.join(load_path,stream,shoot,path_2048,filename))
+                    yield(os.path.join(path_2048,filename))
             
             
 def preprocess(path):
