@@ -8,7 +8,7 @@ model = torch.hub.load('yolov5',
         source='local',
         force_reload=True)  # local repo
 
-fake_image = torch.zeros([1, 3, 640, 640], dtype=torch.float32)
+fake_image = torch.zeros([1, 3, 2048, 2048], dtype=torch.float32)
 #fake_image = (torch.rand(3), torch.rand(3))
 try:
     torch.neuron.analyze_model(model, example_inputs=[fake_image])
