@@ -235,9 +235,9 @@ def benchmark():
             sum_time += times
     end_time = time.time()
     print(f"Total filenames :{len(filenames)}")
-    print('Duration in Seconds', sum_time / n_threads)
-    print('Images Per Second:', len(filenames) / (sum_time / n_threads))
-    print(f"End time - Start time in Seconds {end_time-start_time}")
+    print('Prediction Duration in Seconds', sum_time / n_threads)
+    print('Images Predicted Per Second:', len(filenames) / (sum_time / n_threads))
+    print(f"Total time elapsed {end_time-start_time}")
     # print("Results",results)
     # print("Latency",latency)
     # print("Latency P50: {:.1f}".format(np.percentile(latency, 50)))
