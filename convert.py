@@ -4,6 +4,7 @@ from torchvision import models
 
 NEURON_CORES = 1
 SIZE = 2048
+IN_TYPE = torch.float32
 
 model = torch.hub.load('yolov5',
         'custom',
@@ -11,7 +12,7 @@ model = torch.hub.load('yolov5',
         source='local',
         force_reload=True)  # local repo
 model.eval()
-fake_image = torch.zeros([1, 3, 2048, 2048], dtype=torch.float32)
+fake_image = torch.zeros([1, 3, SIZE, SIZE], dtype=IN_TYPE)
 #fake_image = (torch.rand(3), torch.rand(3))
 try:
     torch.neuron.analyze_model(model, example_inputs=[fake_image])
@@ -20,7 +21,7 @@ except Exception:
 
 model_neuron = torch.neuron.trace(model, 
                                 example_inputs=[fake_image],
-                                verbose=3, # debug
+                                verbose="Debug", # debug
                                 compiler_workdir="./neuron_work_dir/",
                                 dynamic_batch_size = True,
                                 compiler_args=['--neuroncore-pipeline-cores', str(NEURON_CORES)])
