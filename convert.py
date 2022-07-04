@@ -3,7 +3,7 @@ import torch_neuron
 from torchvision import models
 
 NEURON_CORES = 1
-SIZE = 2048
+SIZE = 512
 IN_TYPE = torch.float32
 
 model = torch.hub.load('yolov5',
@@ -11,17 +11,21 @@ model = torch.hub.load('yolov5',
         path='yolov5/weights/yolov5l6_v2.2_2048x2048_30.05.2022_conf0.546.pt',
         source='local',
         force_reload=True)  # local repo
-# model.eval()
+
+# https://github.com/ultralytics/yolov5/issues/7739
+for m in model.modules():
+    if hasattr(m, 'inplace'):
+        m.inplace = False
+
 fake_image = torch.zeros([1, 3, SIZE, SIZE], dtype=IN_TYPE)
-#fake_image = (torch.rand(3), torch.rand(3))
+
 try:
     torch.neuron.analyze_model(model, example_inputs=[fake_image])
 except Exception:
     torch.neuron.analyze_model(model, example_inputs=[fake_image])
 
 model_neuron = torch.neuron.trace(model, 
-                                example_inputs=[fake_image],
-                                verbose="Debug" # debug
+                                example_inputs=[fake_image]
                                 )
 
 ## Export to saved model
